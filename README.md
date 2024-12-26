@@ -32,6 +32,8 @@ Handling Large Datasets: To ensure that large datasets can be efficiently handle
 Axios: The use of Axios ensures secure HTTP requests, and additional security measures like HTTPS are recommended when deploying the app.
 6. Reliability:
 User Feedback: The application provides clear feedback to the user, such as error messages when the user exceeds the character limit for Todo items  creation or edition.
+Optional Bonus: API Integration (News API)
+The application integrates with the NewsAPI to display daily news updates. Axios is used to make an API request to fetch news articles, which are displayed at the bottom of the app under the “News of the Day” section.
 
 Clone and run the TodoApp repository locally
 Prerequisites:
