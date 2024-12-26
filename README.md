@@ -55,6 +55,13 @@ git checkout master
 To test the app, follow these steps:
 	npm test or npm run test
 
+ Developed by: 
+Diego Mancipe
+phone: +57 320 2599374
+git:https://github.com/dhmancipe
+linkedin: https://www.linkedin.com/in/elmancipe/
+
+
 
 
 
