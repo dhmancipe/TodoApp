@@ -1,10 +1,24 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { editTodo, deleteTodo, changeStatusTodo, Todo } from "../store/todoSlice";
-import { TextField, IconButton, ListItem, MenuItem, Select, Typography, Dialog, DialogActions, DialogContent, DialogTitle, Button, SelectChangeEvent } from "@mui/material";
+import {
+    TextField,
+    IconButton,
+    ListItem,
+    MenuItem,
+    Select,
+    Typography,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Button,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { useTheme } from "@mui/material/styles";
 
 interface TodoItemProps {
     todo: Todo;
@@ -13,9 +27,11 @@ interface TodoItemProps {
 const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
     const dispatch = useDispatch();
     const [isEditing, setIsEditing] = useState(false);
-    const [title, setTitle] = useState<string>(todo.title);
-    const [status, setStatus] = useState<"Todo" | "Doing" | "Done">(todo.status);
-    const [openDialog, setOpenDialog] = useState(false);
+    const [title, setTitle] = useState(todo.title);
+    const [status, setStatus] = useState(todo.status);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const theme = useTheme();
 
     const handleEdit = () => {
         if (isEditing && title.trim()) {
@@ -24,76 +40,88 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
         setIsEditing(!isEditing);
     };
 
-    const handleChangeStatus = (event: SelectChangeEvent<"Todo" | "Doing" | "Done">) => {
-        const newStatus = event.target.value as "Todo" | "Doing" | "Done"; if (newStatus === "Done") {
-            setOpenDialog(true);
+    const handleStatusChange = (newStatus: "Todo" | "Doing" | "Done") => {
+        if (newStatus === "Done") {
+            setIsDialogOpen(true);
         } else {
             setStatus(newStatus);
             dispatch(changeStatusTodo({ id: todo.id, status: newStatus }));
         }
     };
 
-    const handleConfirmChangeStatus = () => {
+    const confirmStatusChange = () => {
         setStatus("Done");
         dispatch(changeStatusTodo({ id: todo.id, status: "Done" }));
-        setOpenDialog(false);
+        setIsDialogOpen(false);
     };
 
-    const handleCancelChangeStatus = () => {
-        setOpenDialog(false);
+    const getStatusColor = () => {
+        return {
+            Todo: theme.palette.error.main,
+            Doing: theme.palette.secondary.main,
+            Done: theme.palette.primary.main,
+        }[status];
     };
 
     return (
         <>
             <ListItem
-                sx={{
-                    borderColor: "gray",
-                    borderWidth: 2,
-                    borderStyle: "solid",
-                    background: status === "Todo" ? "rgb(255, 210, 220)" : status === "Doing" ? "rgb(255, 230, 204)" : "rgb(200, 250, 200)",
-                    marginBottom: 1,
-                    borderRadius: 1,
-                }}
-            >
-                {isEditing ? (
-                    <TextField
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        label="Edit Todo"
-                         sx={{ background: 'white', width: '350px' }} 
-                        inputProps={{
-                            maxLength: 30,
-                        }}
-                        error={title.length >= 30}
-                        helperText={title.length >= 30 ? "Max 30 caracters" : ""}
-
-                    />
-                ) : (
-                    <Typography variant="h6" sx={{ width: '350px' }}>
-                        {todo.title}
-                    </Typography>
-                )}
+    sx={{
+        mb: 0.5, 
+        py: 0.5,
+        px: 1,
+        borderRadius: 3,
+        backgroundColor: theme.palette.background.default,
+        fontSize: "0.65rem",
+    }}
+>
+    {isEditing ? (
+        <TextField
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            label="Edit Todo"
+            size="small" 
+            sx={{ width: 350 }}
+            inputProps={{ maxLength: 30 }}
+        />
+    ) : (
+        <Typography variant="body2" sx={{ width: 350 }}>
+            {todo.title}
+        </Typography>
+    )}
 
                 <Select
                     value={status}
-                    onChange={handleChangeStatus}
-                    displayEmpty
-                    style={{ marginRight: "10px", minWidth: "100px" }}
-                    sx={{ background: 'white' }}
+                    onChange={(e) => handleStatusChange(e.target.value as "Todo" | "Doing" | "Done")}
+                    sx={{
+                        minWidth: 120,
+                        backgroundColor: theme.palette.background.default,
+                        borderRadius: 5,
+                        color: getStatusColor(),
+                        height:35
+                    }}
+                   
+                    IconComponent={(props) => (
+                        <ArrowDropDownIcon
+                          {...props}
+                          style={{ color: theme.palette.text.secondary }}
+                        />
+                      )}
                 >
                     <MenuItem value="Todo">Todo</MenuItem>
                     <MenuItem value="Doing">Doing</MenuItem>
                     <MenuItem value="Done">Done</MenuItem>
                 </Select>
 
-                <IconButton onClick={handleEdit} aria-label={isEditing ? "save" : "edit"}>
-                    {isEditing ? <SaveIcon /> : <EditIcon />}
+                <IconButton onClick={handleEdit}>
+                    {isEditing ? <SaveIcon sx={{color: theme.palette.text.secondary}} /> : <EditIcon sx={{color: theme.palette.text.secondary}} />}
                 </IconButton>
                 <IconButton onClick={() => dispatch(deleteTodo(todo.id))}>
-                    <DeleteIcon />
+                    <DeleteIcon sx={{color: theme.palette.text.secondary}} />
                 </IconButton>
             </ListItem>
-            <Dialog open={openDialog} onClose={handleCancelChangeStatus}>
+
+            <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
                 <DialogTitle>Confirm Status Change</DialogTitle>
                 <DialogContent>
                     <Typography>
@@ -101,10 +129,10 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
                     </Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCancelChangeStatus} color="primary">
+                    <Button onClick={() => setIsDialogOpen(false)} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={handleConfirmChangeStatus} color="primary">
+                    <Button onClick={confirmStatusChange} color="primary">
                         Confirm
                     </Button>
                 </DialogActions>
