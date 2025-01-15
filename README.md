@@ -57,6 +57,13 @@ git checkout master
 To test the app, follow these steps:
 	npm test or npm run test
 
+
+Aditional Modifications:
+ 
+To improve the UI, styles for dark mode and light mode have been implemented, along with a global Redux state and a function that detects the browser's current mode. Lastly, ThemeProvider and useTheme were used to modify the styles of MUI components. Additionally, the layout and size of some elements were adjusted to enhance the user experience.
+
+On the other hand, the test files have been fixed.
+
  Developed by: 
 Diego Mancipe
 phone: +57 320 2599374
