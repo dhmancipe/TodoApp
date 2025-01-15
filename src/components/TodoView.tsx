@@ -76,7 +76,7 @@ const TodoApp: React.FC = () => {
                                     My tasks
                                 </Typography>
                 <div>
-                <Typography variant="h7" style={{marginTop:15, marginRight:15}}>
+                <Typography variant="caption" style={{marginTop:15, marginRight:15}}>
                     Show first
                 </Typography>
                 <Select
